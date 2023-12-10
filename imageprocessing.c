@@ -241,31 +241,45 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
             // verific daca pixelul are vecini inafara imaginii:
             int linii_capat_inferior = 0, coloane_capat_inferior = 0;
             int linii_capat_superior = 0, coloane_capat_superior = 0;
+            int filtru_linii_capat_inferior = 0, filtru_coloane_capat_inferior = 0;
+            int filtru_linii_capat_superior = 0, filtru_coloane_capat_superior = 0;
 
-            if (i - filter_size/2 < 0)
+            if (i - filter_size/2 < 0) {
                 linii_capat_inferior = 0;
-            else
+                filtru_linii_capat_inferior = filter_size/2 - i;
+            } else {
                 linii_capat_inferior = i - filter_size/2;
+                filtru_linii_capat_inferior = 0;
+            }
 
-            if (j - filter_size/2 < 0)
+            if (j - filter_size/2 < 0) {
                 coloane_capat_inferior = 0;
-            else
+                filtru_coloane_capat_inferior = filter_size/2 - j;
+            } else {
                 coloane_capat_inferior = j - filter_size/2;
+                filtru_coloane_capat_inferior = 0;
+            }
 
-            if (i + filter_size/2 >= N)
+            if (i + filter_size/2 >= N) {
                 linii_capat_superior = N-1;
-            else
+                filtru_linii_capat_superior = filter_size - (i + filter_size/2 - N);
+            } else {
                 linii_capat_superior = i + filter_size/2;
+                filtru_linii_capat_superior = filter_size;
+            }
 
-            if (j + filter_size/2 >= M)
+            if (j + filter_size/2 >= M) {
                 coloane_capat_superior = M-1;
-            else
+                filtru_coloane_capat_superior = filter_size - (j + filter_size/2 - M);
+            } else {
                 coloane_capat_superior = j + filter_size/2;
+                filtru_coloane_capat_superior = filter_size;
+            }
 
             for (int p = 0; p < NR_CULORI; p++) {
-                for (int k = linii_capat_inferior; k <= linii_capat_superior; k++) {
-                    for (int l = coloane_capat_inferior; l <= coloane_capat_superior; l++) {
-                        img_cu_filtru[i][j][p] += (float)image[k][l][p] * filter[k][l];
+                for (int k = linii_capat_inferior, q = filtru_linii_capat_inferior; k <= linii_capat_superior && q < filtru_linii_capat_superior; k++, q++) {
+                    for (int l = coloane_capat_inferior, t = filtru_coloane_capat_inferior; l <= coloane_capat_superior && t < filtru_coloane_capat_superior; l++, t++) {
+                        img_cu_filtru[i][j][p] += (float)image[k][l][p] * filter[q][t];
                     }
                 }
             }

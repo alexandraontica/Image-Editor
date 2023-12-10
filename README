@@ -27,9 +27,14 @@ Am eliberat la final spatiul de memorie alocat imaginii initiale.
 
 Task 5:
 Am modificat lungimea si latimea imagini pe care trebuie sa o copiez ca sa nu depaseasca latimea si lungimea imaginii destinatie.
-Mai departe am folosit algoritmul scris la extinderea matricei pe care l-am modifcat putin ca sa indeplineasca cerinta acestui task.
+Mai departe am folosit algoritmul scris la extinderea matricei (partea in care copiam imaginea initiala in matricea imaginii extinse) pe
+care l-am modifcat putin.
 
 Task 6:
-
+Am alocat o matrice 3D in care am salvat imaginea cu filtrul aplicat, matrice de tip float. Pentru fiecare pixel al imaginii initiale am 
+verificat daca are vecini aflati inafara imaginii. In caz afirmativ, pe acestia nu i-am luat in considerare in aplicarea formulei (am 
+modificat atat indicii imaginii, cat si ai filtrului, parcursi in aplicarea formulei date de cerinta). Apoi am atribuit imaginii initiale
+modificarile date de filtru (adica valorile din img_cu_filtru), tinand cont sa transform valorile in intregi si sa apartina intervalului
+[0,255]. La final, am eliberat matricea de tip float alocata la inceputul functiei si am returnat imaginea de tip int cu filtrul aplicat.
 
 Task 7:
