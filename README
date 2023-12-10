@@ -1,0 +1,35 @@
+Am scris functii de alocare si eliberare a unei matrice 3D de tip int pentru ca ma voi folosi de ele mai departe. Numai la taskul 6 am
+rescris alocarea/eliberarea pentru ca matricea respectiva era de tip float si am vrut sa ma asigur ca alocarea este corecta.
+
+Task 1:
+Am interschimbat fiecare pixel din prima jumatate a matricei cu simetricul sau din a doua jumatate. (dupa o formula determinata luand
+exemple concrete pe foaie ca sa vad exact ce se intampla)
+
+Task 2:
+Am alocat o noua matrice in care se salveaza imaginea rotita. Nu puteam folosi imaginea initiala direct din mai multe motive, dar in 
+principal pentru ca lungimea si latimea se modifica si nu aveam spatiul suficient pentru rezultat daca lungimea si latimea nu erau egale.
+Pentru rotire am folosit din nou o formula determinata prin incercari. Am observat in urma exemplelor luate ca indicele de coloana 
+devine indicele de linie in imaginea rotita. Indicele de coloana al imaginii rotite se modifica astfel: 
+Nr. coloane - indice linie (initial) -1
+La final am eliberat spatiul alocat pentru imaginea initiala (cand se apeleaza functia cu image = rotate_left(image, ...) se pierde accesul
+la zona de memorie a imaginii initiale deoarece functia returneaza direct imaginea rotita).
+
+Task 3: 
+Am alocat o noua matrice in care se salveaza imaginea decupata. Am parcurs doar portiunea din imaginea initiala pe care vreau sa o
+pastrez si am salvat-o in matricea nou creata. La final am eliberat zona de memorie a imaginii initiale deoarece functia returneaza
+imaginea decupata.
+
+Task 4: 
+Am alocat o noua matrice in care se salveaza imaginea "extinsa". Am parcurs matricea nou creata. Pe randurile si coloanele adaugate am 
+pus noile valori date de parametrii functiei. In rest am salvat imaginea initiala. (aici m-am folosit de algoritmul scris anterior
+la crop pe care l-am modificat putin)
+Am eliberat la final spatiul de memorie alocat imaginii initiale.
+
+Task 5:
+Am modificat lungimea si latimea imagini pe care trebuie sa o copiez ca sa nu depaseasca latimea si lungimea imaginii destinatie.
+Mai departe am folosit algoritmul scris la extinderea matricei pe care l-am modifcat putin ca sa indeplineasca cerinta acestui task.
+
+Task 6:
+
+
+Task 7:

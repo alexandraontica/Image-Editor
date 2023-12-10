@@ -3,6 +3,8 @@
 #include "imageprocessing.h"
 
 #define NR_CULORI 3
+#define VAL_MIN_CULORI_TASK6 0
+#define VAL_MAX_CULORI_TASK6 255
 
 int*** alloc_mat(int M, int N) {
     int ***mat = (int ***)malloc(M * sizeof(int **));
@@ -37,39 +39,6 @@ int*** alloc_mat(int M, int N) {
     return mat;
 }
 
-int*** realloc_mat(int*** mat, int M, int N, int K, int P) {
-    int ***aux = (int***)realloc(mat, (M + K) * sizeof(int**));
-
-    if (aux == NULL)
-        return NULL;
-
-    for (int i = 0; i < M + K; i++) {
-        aux[i] = (int**)realloc(aux[i], (N + P) * sizeof(int*));
-
-        if (aux[i] == NULL) {
-            for (int j = 0; j < i; j++)
-                free(aux[j]);
-            free(aux);
-            return NULL;
-        }
-
-        for (int j = 0; j < N + P; j++) {
-            aux[i][j] = (int*)realloc(aux[i][j], NR_CULORI * sizeof(int));
-
-            if (aux[i][j] == NULL) {
-                for (int k = 0; k < j; k++)
-                    free(aux[i][k]);
-                for (int k = 0; k < i; k++)
-                    free(aux[k]);
-
-                free(aux);
-                return NULL;
-            }
-        }
-    }
-    return aux;
-}
-
 void free_mat(int ***mat, int M, int N) {
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < N; j++) {
@@ -102,27 +71,24 @@ int ***flip_horizontal(int ***image, int N, int M) {
 
 // Task 2
 int ***rotate_left(int ***image, int N, int M) {
-    if (image != NULL) {
-        int ***img_rotita = alloc_mat(M, N);
-
-        if (img_rotita != NULL) {
-            for (int i = 0; i < M; i++) {
-                for (int j = 0; j < N; j++) {
-                    for (int k = 0; k < NR_CULORI; k++) {
-                        img_rotita[i][j][k] = image[j][M - i - 1][k];
-                    }
-                }
-            }
-
-            free_mat(image, N, M);
-
-            return img_rotita;
-        } else {
-            return NULL;
-        }
-    } else {
+    if (image == NULL)
         return NULL;
+    int ***img_rotita = alloc_mat(M, N);
+
+    if (img_rotita == NULL)
+        return NULL;
+
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+            for (int k = 0; k < NR_CULORI; k++) {
+                img_rotita[i][j][k] = image[j][M - i - 1][k];
+            }
+        }
     }
+
+    free_mat(image, N, M);
+
+    return img_rotita;
 }
 
 // Task 3
@@ -186,6 +152,8 @@ int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
         }
     }
 
+    free_mat(image, N, M);
+
     return img_extend;
 }
 
@@ -194,6 +162,7 @@ int ***paste(int ***image_dst, int N_dst, int M_dst, int *** image_src, int N_sr
     if (x < 0 || y < 0)
         return NULL;
 
+    // modific capetele a.i. sa nu-mi depaseasca dimensiunile matricei initiale:
     if (N_dst < y + N_src) {
         N_src = N_dst - y;
     }
@@ -229,6 +198,102 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
 
     if (filter == NULL)
         return image;
+
+    float ***img_cu_filtru = (float ***)malloc(N * sizeof(float **));
+
+    for (int i = 0; i < N; i++) {
+        img_cu_filtru[i] = (float **)malloc(M * sizeof(float *));
+
+        if (img_cu_filtru[i] == NULL) {
+            for (int j = 0; j < i; j++) {
+                free(img_cu_filtru[j]);
+            }
+            free(img_cu_filtru);
+            return NULL;
+        }
+
+        for (int j = 0; j < M; j++) {
+            img_cu_filtru[i][j] = (float *)malloc(NR_CULORI * sizeof(float));
+            if (img_cu_filtru[i][j] == NULL) {
+                for (int k = 0; k < j; k++) {
+                    free(img_cu_filtru[i][k]);
+                }
+                for (int k = 0; k <= i; k++) {
+                    free(img_cu_filtru[k]);
+                }
+
+                free(img_cu_filtru);
+                return NULL;
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            for (int k = 0; k < NR_CULORI; k++) {
+                img_cu_filtru[i][j][k] = 0;
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            // verific daca pixelul are vecini inafara imaginii:
+            int linii_capat_inferior = 0, coloane_capat_inferior = 0;
+            int linii_capat_superior = 0, coloane_capat_superior = 0;
+
+            if (i - filter_size/2 < 0)
+                linii_capat_inferior = 0;
+            else
+                linii_capat_inferior = i - filter_size/2;
+
+            if (j - filter_size/2 < 0)
+                coloane_capat_inferior = 0;
+            else
+                coloane_capat_inferior = j - filter_size/2;
+
+            if (i + filter_size/2 >= N)
+                linii_capat_superior = N-1;
+            else
+                linii_capat_superior = i + filter_size/2;
+
+            if (j + filter_size/2 >= M)
+                coloane_capat_superior = M-1;
+            else
+                coloane_capat_superior = j + filter_size/2;
+
+            for (int p = 0; p < NR_CULORI; p++) {
+                for (int k = linii_capat_inferior; k <= linii_capat_superior; k++) {
+                    for (int l = coloane_capat_inferior; l <= coloane_capat_superior; l++) {
+                        img_cu_filtru[i][j][p] += (float)image[k][l][p] * filter[k][l];
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j< M; j++) {
+            for (int k = 0; k < NR_CULORI; k++) {
+                if (img_cu_filtru[i][j][k] < VAL_MIN_CULORI_TASK6) {
+                    image[i][j][k] = VAL_MIN_CULORI_TASK6;
+                } else if (img_cu_filtru[i][j][k] > VAL_MAX_CULORI_TASK6) {
+                    image[i][j][k] = VAL_MAX_CULORI_TASK6;
+                } else {
+                    image[i][j][k] = (int)img_cu_filtru[i][j][k];
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            free(img_cu_filtru[i][j]);
+        }
+        free(img_cu_filtru[i]);
+    }
+
+    free(img_cu_filtru);
 
     return image;
 }

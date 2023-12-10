@@ -4,6 +4,9 @@
 #include "bmp.h"
 
 int main() {
-    // Task 7
+    while (1) {
+        
+    }
+
     return 0;
 }
