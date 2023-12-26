@@ -5,9 +5,6 @@
 #include "bmp.h"
 
 #define MAX_PATH 100
-#define MAX_IMAGINI 100
-#define MAX_FILTRE 100
-#define NR_CULORI 3
 
 typedef struct {
     int ***image;
@@ -20,13 +17,8 @@ typedef struct {
 } type_filtre;
 
 int main() {
-    type_imagini *imagini = (type_imagini *)malloc(MAX_IMAGINI * sizeof(type_imagini));
-    type_filtre *filtre = (type_filtre *)malloc(MAX_FILTRE * sizeof(type_filtre));
-
-    if (imagini == NULL || filtre == NULL) {
-        printf("Eroare la alocare");
-        return 1;
-    }
+    type_imagini *imagini = NULL;
+    type_filtre *filtre = NULL;
 
     int nr_imagini = 0, nr_filtre = 0;
 
@@ -39,17 +31,21 @@ int main() {
         comanda[2] = '\0';
 
         if (strcmp(comanda, "e") == 0) {
-            for (int i = 0; i < nr_imagini; i++) {
-                free_mat(imagini[i].image, imagini[i].N, imagini[i].M);
+            if (imagini != NULL) {
+                for (int i = 0; i < nr_imagini; i++) {
+                    free_mat(imagini[i].image, imagini[i].N, imagini[i].M);
+                }
+                free(imagini);
             }
-            free(imagini);
 
-            for (int i = 0; i < nr_filtre; i++) {
-                for (int j = 0; j < filtre[i].size; j++)
-                    free(filtre[i].filter[j]);
-                free(filtre[i].filter);
+            if (filtre != NULL) {
+                for (int i = 0; i < nr_filtre; i++) {
+                    for (int j = 0; j < filtre[i].size; j++)
+                        free(filtre[i].filter[j]);
+                    free(filtre[i].filter);
+                }
+                free(filtre);
             }
-            free(filtre);
 
             return 0;
 
@@ -57,17 +53,29 @@ int main() {
             int N = 0, M = 0;
             scanf("%d%d", &N, &M);
 
-            imagini[nr_imagini].image = alloc_mat(N, M);
-            imagini[nr_imagini].N = N;
-            imagini[nr_imagini].M = M;
-
             char path[MAX_PATH];
             scanf("%s", path);
 
-            read_from_bmp(imagini[nr_imagini].image, N, M, path);
+            type_imagini *aux = (type_imagini *)realloc(imagini, (nr_imagini + 1) * sizeof(type_imagini));
 
-            nr_imagini++;
+            if (aux == NULL) {
+                printf("Eroare la alocare, imaginea nu a fost incarcata");
+            } else {
+                imagini = aux;
 
+                imagini[nr_imagini].image = alloc_mat(N, M);
+
+                if (imagini[nr_imagini].image == NULL) {
+                    printf("Eroare la alocare, imaginea nu a fost incarcata");
+                } else {
+                    imagini[nr_imagini].N = N;
+                    imagini[nr_imagini].M = M;
+
+                    read_from_bmp(imagini[nr_imagini].image, N, M, path);
+
+                    nr_imagini++;
+                }
+            }
         } else if (strcmp(comanda, "s") == 0) {
             int index = 0;
             scanf("%d", &index);
@@ -118,34 +126,46 @@ int main() {
             imagini[index_src].image, imagini[index_src].N, imagini[index_src].M, x, y);
 
         } else if (strcmp(comanda, "cf") == 0) {
-            scanf("%d", &filtre[nr_filtre].size);
+            type_filtre *aux = (type_filtre *)realloc(filtre, (nr_filtre +1) * sizeof(type_filtre));
 
-            filtre[nr_filtre].filter = (float **)malloc(filtre[nr_filtre].size * sizeof(float *));
-            if (filtre[nr_filtre].filter == NULL) {
-                    printf("Eroare la alocare");
-                    return 1;
-                }
-            for (int i = 0; i < filtre[nr_filtre].size; i++) {
-                filtre[nr_filtre].filter[i] = (float *)malloc(filtre[nr_filtre].size * sizeof(float));
-                if (filtre[nr_filtre].filter[i] == NULL) {
-                    printf("Eroare la alocare");
-                    for (int j = 0; j < i; j++) {
-                        free(filtre[nr_filtre].filter[j]);
+            if (aux == NULL) {
+                printf("Eroare la alocare, filtrul nu a fost adaugat");
+            } else {
+                filtre = aux;
+
+                scanf("%d", &filtre[nr_filtre].size);
+
+                filtre[nr_filtre].filter = (float **)calloc(filtre[nr_filtre].size, sizeof(float *));
+
+                if (filtre[nr_filtre].filter == NULL) {
+                    printf("Eroare la alocare, filtrul nu a fost adaugat");
+                } else {
+                    for (int i = 0; i < filtre[nr_filtre].size; i++) {
+                        filtre[nr_filtre].filter[i] = (float *)calloc(filtre[nr_filtre].size, sizeof(float));
+
+                        if (filtre[nr_filtre].filter[i] == NULL) {
+                            printf("Eroare la alocare, filtrul nu a fost adaugat");
+
+                            for (int j = 0; j < i; j++) {
+                                free(filtre[nr_filtre].filter[j]);
+                            }
+                            free(filtre[nr_filtre].filter);
+                            filtre[nr_filtre].filter = NULL;
+                            break;
+                        }
                     }
-                    free(filtre[nr_filtre].filter);
-                    filtre[nr_filtre].filter = NULL;
-                    break;
+
+                    if (filtre[nr_filtre].filter != NULL) {
+                        for (int i = 0; i < filtre[nr_filtre].size; i++) {
+                            for (int j = 0; j < filtre[nr_filtre].size; j++) {
+                                scanf("%f", &filtre[nr_filtre].filter[i][j]);
+                            }
+                        }
+
+                        nr_filtre++;
+                    }
                 }
             }
-
-            for (int i = 0; i < filtre[nr_filtre].size; i++) {
-                for (int j = 0; j < filtre[nr_filtre].size; j++) {
-                    scanf("%f", &filtre[nr_filtre].filter[i][j]);
-                }
-            }
-
-            nr_filtre++;
-
         } else if (strcmp(comanda, "af") == 0) {
             int index_img = 0, index_filter = 0;
             scanf("%d%d", &index_img, &index_filter);
@@ -157,7 +177,7 @@ int main() {
             int index_filter = 0;
             scanf("%d", &index_filter);
 
-             for (int k = 0; k < filtre[index_filter].size; k++)
+            for (int k = 0; k < filtre[index_filter].size; k++)
                 free(filtre[index_filter].filter[k]);
             free(filtre[index_filter].filter);
 
@@ -181,8 +201,6 @@ int main() {
             }
 
             nr_imagini--;
-
-            free_mat(imagini[nr_imagini + 1].image, imagini[nr_imagini + 1].N, imagini[nr_imagini + 1].M);
         }
     }
     return 0;

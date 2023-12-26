@@ -9,6 +9,11 @@
 int*** alloc_mat(int M, int N) {
     int ***mat = (int ***)malloc(M * sizeof(int **));
 
+    if (mat == NULL) {  // verific de fiecare data daca a reusit alocarea
+        free(mat);
+        return NULL;
+    }
+
     for (int i = 0; i < M; i++) {
         mat[i] = (int **)malloc(N * sizeof(int *));
 
@@ -58,7 +63,8 @@ int ***flip_horizontal(int ***image, int N, int M) {
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M / 2; j++) {
-            for (int k = 0; k <= NR_CULORI; k++) {
+            for (int k = 0; k < NR_CULORI; k++) {
+                // interschimb fiecare pixel cu simetricul sau
                 int aux = image[i][M - j - 1][k];
                 image[i][M - j - 1][k] = image[i][j][k];
                 image[i][j][k] = aux;
@@ -73,6 +79,7 @@ int ***flip_horizontal(int ***image, int N, int M) {
 int ***rotate_left(int ***image, int N, int M) {
     if (image == NULL)
         return NULL;
+
     int ***img_rotita = alloc_mat(M, N);
 
     if (img_rotita == NULL)
@@ -93,7 +100,7 @@ int ***rotate_left(int ***image, int N, int M) {
 
 // Task 3
 int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
-    if (image == NULL || x < 0 || y < 0 || x + w > M || y + h > N)
+    if (image == NULL)
         return NULL;
 
     int ***img_crop = alloc_mat(h, w);
@@ -104,6 +111,8 @@ int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
 
     int p = 0, l = 0;
 
+    // parcurg doar ce portiune ma intereseaza din matricea initiala
+    // imaginea decupata mi-o creez de la 0 (pt asta am luat p si l)
     for (int i = y; i < y + h; i++) {
         for (int j = x; j < x + w; j++) {
             for (int k = 0; k < NR_CULORI; k++) {
@@ -144,6 +153,7 @@ int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
                 } else {
                     l++;
                 }
+
             } else {
                 img_extend[i][j][0] = new_R;
                 img_extend[i][j][1] = new_G;
@@ -159,10 +169,7 @@ int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
 
 // Task 5
 int ***paste(int ***image_dst, int N_dst, int M_dst, int *** image_src, int N_src, int M_src, int x, int y) {
-    if (x < 0 || y < 0)
-        return NULL;
-
-    // modific capetele a.i. sa nu-mi depaseasca dimensiunile matricei initiale:
+    // modific capetele a.i. sa nu-mi depaseasca dimensiunile matricei initiale
     if (N_dst < y + N_src) {
         N_src = N_dst - y;
     }
@@ -182,6 +189,7 @@ int ***paste(int ***image_dst, int N_dst, int M_dst, int *** image_src, int N_sr
                 if (l == M_src - 1) {
                     p++;
                     l = 0;
+
                 } else {
                     l++;
                 }
@@ -231,7 +239,7 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             for (int k = 0; k < NR_CULORI; k++) {
-                img_cu_filtru[i][j][k] = 0;
+                img_cu_filtru[i][j][k] = 0;  // am initializat toata matricea cu 0 pentru a putea face ulterior sumele
             }
         }
     }
@@ -277,9 +285,11 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
             }
 
             for (int p = 0; p < NR_CULORI; p++) {
-                for (int k = linii_capat_inferior, q = filtru_linii_capat_inferior; k <= linii_capat_superior && q < filtru_linii_capat_superior; k++, q++) {
-                    for (int l = coloane_capat_inferior, t = filtru_coloane_capat_inferior; l <= coloane_capat_superior && t < filtru_coloane_capat_superior; l++, t++) {
-                        img_cu_filtru[i][j][p] += (float)image[k][l][p] * filter[q][t];
+                for (int k = linii_capat_inferior, q = filtru_linii_capat_inferior;
+                k <= linii_capat_superior && q < filtru_linii_capat_superior; k++, q++) {
+                    for (int l = coloane_capat_inferior, t = filtru_coloane_capat_inferior;
+                    l <= coloane_capat_superior && t < filtru_coloane_capat_superior; l++, t++) {
+                        img_cu_filtru[i][j][p] += (float)image[k][l][p] * filter[q][t];  // aplic filtru
                     }
                 }
             }
