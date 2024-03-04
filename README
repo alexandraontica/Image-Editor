@@ -1,16 +1,16 @@
-Am scris functii de alocare si eliberare a unei matrice 3D de tip int pentru ca ma voi folosi de ele mai departe. Numai la taskul 6 am
-rescris alocarea/eliberarea pentru ca matricea respectiva era de tip float si am vrut sa ma asigur ca alocarea este corecta.
+Am scris functii de alocare si eliberare a unei matrice 3D de tip int pentru ca ma voi folosi de ele in cadrul mai mulor functii. 
+Numai la taskul 6 am rescris alocarea/eliberarea pentru ca matricea respectiva era de tip float si am vrut sa ma asigur ca alocarea 
+este corecta.
+Orice (re)alocare am facut, m-am asigurat ca aceasta a reusit (ca nu a returnat NULL).
 
 Task 1:
-Am interschimbat fiecare pixel din prima jumatate a matricei cu simetricul sau din a doua jumatate. (dupa o formula determinata luand
-exemple concrete pe foaie ca sa vad exact ce se intampla)
+Am interschimbat fiecare pixel (elem din matrice) din prima jumatate a matricei cu simetricul sau din a doua jumatate. (dupa o formula 
+determinata luand exemple concrete pe foaie ca sa vad exact ce se intampla)
 
 Task 2:
 Am alocat o noua matrice in care se salveaza imaginea rotita. Nu puteam folosi imaginea initiala direct din mai multe motive, dar in 
 principal pentru ca lungimea si latimea se modifica si nu aveam spatiul suficient pentru rezultat daca lungimea si latimea nu erau egale.
-Pentru rotire am folosit din nou o formula determinata prin incercari. Am observat in urma exemplelor luate ca indicele de coloana 
-devine indicele de linie in imaginea rotita. Indicele de coloana al imaginii rotite se modifica astfel: 
-Nr. coloane - indice linie (initial) -1
+Pentru rotire am folosit din nou o formula determinata prin incercari/din exemple.
 La final am eliberat spatiul alocat pentru imaginea initiala (cand se apeleaza functia cu image = rotate_left(image, ...) se pierde accesul
 la zona de memorie a imaginii initiale deoarece functia returneaza direct imaginea rotita).
 
@@ -20,21 +20,33 @@ pastrez si am salvat-o in matricea nou creata. La final am eliberat zona de memo
 imaginea decupata.
 
 Task 4: 
-Am alocat o noua matrice in care se salveaza imaginea "extinsa". Am parcurs matricea nou creata. Pe randurile si coloanele adaugate am 
-pus noile valori date de parametrii functiei. In rest am salvat imaginea initiala. (aici m-am folosit de algoritmul scris anterior
-la crop pe care l-am modificat putin)
+Am alocat o noua matrice in care se salveaza imaginea "extinsa". 
+Aici m-am folosit de algoritmul scris anterior (faptul ca m-am folosit de var p si l sa parcurg una dintre matrice) la crop pe care 
+l-am adaptat cerintei.
 Am eliberat la final spatiul de memorie alocat imaginii initiale.
 
 Task 5:
 Am modificat lungimea si latimea imagini pe care trebuie sa o copiez ca sa nu depaseasca latimea si lungimea imaginii destinatie.
 Mai departe am folosit algoritmul scris la extinderea matricei (partea in care copiam imaginea initiala in matricea imaginii extinse) pe
-care l-am modifcat putin.
+care l-am modifcat putin (am scos ultima parte, else-ul).
 
 Task 6:
-Am alocat o matrice 3D in care am salvat imaginea cu filtrul aplicat, matrice de tip float. Pentru fiecare pixel al imaginii initiale am 
-verificat daca are vecini aflati inafara imaginii. In caz afirmativ, pe acestia nu i-am luat in considerare in aplicarea formulei (am 
-modificat atat indicii imaginii, cat si ai filtrului, parcursi in aplicarea formulei date de cerinta). Apoi am atribuit imaginii initiale
-modificarile date de filtru (adica valorile din img_cu_filtru), tinand cont sa transform valorile in intregi si sa apartina intervalului
-[0,255]. La final, am eliberat matricea de tip float alocata la inceputul functiei si am returnat imaginea de tip int cu filtrul aplicat.
+Am alocat o matrice 3D in care am salvat ulterior imaginea cu filtrul aplicat, matrice de tip float. Pentru fiecare pixel al imaginii 
+initiale am verificat daca are vecini aflati inafara imaginii. In caz afirmativ, pe acestia nu i-am luat in considerare in aplicarea 
+formulei (pentru aceasta am modificat atat indicii imaginii, cat si ai filtrului, parcursi in aplicarea formulei date de cerinta). 
+Apoi am atribuit imaginii initiale modificarile date de filtru (adica valorile din img_cu_filtru), tinand cont sa transform in tipul cerut
+de task (intregi din intervalul cerut). La final, am eliberat matricea de tip float alocata la inceputul functiei si am returnat 
+imaginea de tip int cu filtrul aplicat.
 
 Task 7:
+Voi retine filtrele si imaginile in niste vectori de tip structura pentru a le putea retine si dimensiunea (lungime, latime). Programul
+functioneaza in interiorul lui while(1) (pt ca programul sa mearga la nesfarsit si sa se opreasca doar cand intalneste comanda 'e', caz
+pe care il tratez separat intr-un if, la fel ca si in cazul celorlalte comenzi). La inceputul buclei citesc comanda si, ca sa fiu sigura ca 
+stringul are '\0' la final, il pun eu.
+La comanda "e" am eliberat toata memoria alocata dinamic inainte de oprire si abia apoi am oprit programul cu return 0.
+La comenzile "l" si "cf" am realocat de fiecare data vectorul in care retin imaginile/filtrele, crescand de fiecare data cu o pozitie 
+capacitatea acestuia. Pe aceasta noua pozitie am salvat noua imagine/noul filtru.
+La "df" si "di" am eliberat memoria filtrului/imaginii pe care trebuie sa il sterg inainte de a-l sterge pentru a nu pierde accesul la 
+acea zona de memorie.
+La celelate comenzi doar m-am folosit de functiile din bmp.c si de cele scrise de mine in imageprocessing.c, modificand, daca era cazul,
+si dimesiunile imaginilor.
