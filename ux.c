@@ -1,5 +1,12 @@
 #include <stdio.h>
 
+/**
+ * @brief Prints a formatted list of commands and their descriptions to the console.
+ *
+ * This function prints a table of available commands for interacting with images,
+ * including their parameters and descriptions. Each command is displayed with its
+ * associated details to guide the user on how to use them effectively.
+ */
 void print_commands() {
     printf("+--------------+-------------------------+-----------------------------------------------------------+\n");
     printf("| Command Name |        Parameters       |                        Description                        |\n");
