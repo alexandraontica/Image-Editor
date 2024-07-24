@@ -5,7 +5,7 @@
  *
  * @param M The number of rows in the 3D matrix.
  * @param N The number of columns in the 3D matrix.
- * @return int*** A pointer to the allocated 3D matrix, or NULL if the allocation fails.
+ * @return int*** The allocated 3D matrix, or NULL if the allocation fails.
  */
 int*** alloc_mat(int M, int N) {
     int ***mat = (int ***)malloc(M * sizeof(int **));
@@ -48,7 +48,7 @@ int*** alloc_mat(int M, int N) {
 /**
  * @brief Frees a 3D matrix of integers.
  *
- * @param mat A pointer to the 3D matrix to be freed.
+ * @param mat The 3D matrix to be freed.
  * @param M The number of rows in the 3D matrix.
  * @param N The number of columns in the 3D matrix.
  *
@@ -69,10 +69,10 @@ void free_mat(int ****mat, int M, int N) {
 /**
  * @brief Flips a 3D image matrix horizontally.
  * 
- * @param image A pointer to the 3D image matrix to be flipped.
+ * @param image The 3D image matrix to be flipped.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
- * @return int*** A pointer to the horizontally flipped 3D image matrix, or NULL if the input image is NULL.
+ * @return int*** The horizontally flipped 3D image matrix, or NULL if the input image is NULL.
  *
  * The function returns the same pointer that was passed in, with the image modified in place.
  */
@@ -97,10 +97,10 @@ int*** flip_horizontal(int ***image, int N, int M) {
 /**
  * @brief Flips a 3D image matrix vertically.
  *  
- * @param image A pointer to the 3D image matrix to be flipped.
+ * @param image The 3D image matrix to be flipped.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
- * @return int*** A pointer to the vertically flipped 3D image matrix, or NULL if the input image is NULL.
+ * @return int*** The vertically flipped 3D image matrix, or NULL if the input image is NULL.
  *
  * The function returns the same pointer that was passed in, with the image modified in place.
  */
@@ -128,10 +128,10 @@ int*** flip_vertical(int ***image, int N, int M) {
  * The image matrix is assumed to have dimensions N x M x NUM_COLORS. A new 3D matrix 
  * is allocated for the rotated image, and the original matrix is freed.
  *
- * @param image A pointer to the 3D image matrix to be rotated.
+ * @param image The 3D image matrix to be rotated.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
- * @return int*** A pointer to the rotated 3D image matrix, or NULL if the input image is NULL 
+ * @return int*** The rotated 3D image matrix, or NULL if the input image is NULL 
  * or the original if the allocation for the rotated image fails.
  */
 int*** rotate_left(int ***image, int N, int M) {
@@ -164,10 +164,10 @@ int*** rotate_left(int ***image, int N, int M) {
  * The image matrix is assumed to have dimensions N x M x NUM_COLORS. A new 3D matrix 
  * is allocated for the rotated image, and the original matrix is freed.
  *
- * @param image A pointer to the 3D image matrix to be rotated.
+ * @param image The 3D image matrix to be rotated.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
- * @return int*** A pointer to the rotated 3D image matrix, or NULL if the input image is NULL,
+ * @return int*** The rotated 3D image matrix, or NULL if the input image is NULL,
  * or the original image if the allocation for the rotated image fails.
  */
 int*** rotate_right(int ***image, int N, int M) {
@@ -201,14 +201,14 @@ int*** rotate_right(int ***image, int N, int M) {
  * its height (h) and width (w). A new 3D matrix is allocated for the cropped image, and 
  * the original matrix is freed.
  *
- * @param image A pointer to the 3D image matrix to be cropped.
+ * @param image The 3D image matrix to be cropped.
  * @param N The number of rows in the original image matrix.
  * @param M The number of columns in the original image matrix.
  * @param x The x-coordinate of the top-left corner of the crop region.
  * @param y The y-coordinate of the top-left corner of the crop region.
  * @param h The height of the crop region.
  * @param w The width of the crop region.
- * @return int*** A pointer to the cropped 3D image matrix, or NULL if the input image is NULL,
+ * @return int*** The cropped 3D image matrix, or NULL if the input image is NULL,
  * or the original image if the allocation for the cropped image fails or if the coordinates 
  * are invalid.
  */
@@ -250,7 +250,7 @@ int*** crop(int ***image, int N, int M, int x, int y, int h, int w) {
  *
  * A new 3D matrix is allocated for the extended image, and the original matrix is freed.
  *
- * @param image A pointer to the 3D image matrix to be extended.
+ * @param image The 3D image matrix to be extended.
  * @param N The number of rows in the original image matrix.
  * @param M The number of columns in the original image matrix.
  * @param rows The number of rows to add to the top and bottom as a border.
@@ -258,7 +258,7 @@ int*** crop(int ***image, int N, int M, int x, int y, int h, int w) {
  * @param new_R The red component of the new border color.
  * @param new_G The green component of the new border color.
  * @param new_B The blue component of the new border color.
- * @return int*** A pointer to the extended 3D image matrix, or NULL if the input image is NULL,
+ * @return int*** The extended 3D image matrix, or NULL if the input image is NULL,
  * or the original image if the allocation for the extended image fails.
  */
 int*** extend(int ***image, int N, int M, int rows, int cols, int new_R, int new_G, int new_B) {
@@ -307,7 +307,7 @@ int*** extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
  * The function modifies the destination image matrix in place. If the source image exceeds the boundaries 
  * of the destination image, it is truncated to fit within the destination image dimensions.
  *
- * @param image_dst A pointer to the 3D destination image matrix.
+ * @param image_dst The 3D destination image matrix.
  * @param N_dst The number of rows in the destination image matrix.
  * @param M_dst The number of columns in the destination image matrix.
  * @param image_src A pointer to the 3D source image matrix to be pasted.
@@ -315,7 +315,7 @@ int*** extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
  * @param M_src The number of columns in the source image matrix.
  * @param x The x-coordinate in the destination matrix where the top-left corner of the source matrix will be pasted.
  * @param y The y-coordinate in the destination matrix where the top-left corner of the source matrix will be pasted.
- * @return int*** A pointer to the destination image matrix after the source image has been pasted.
+ * @return int*** The destination image matrix after the source image has been pasted.
  */
 int*** paste(int ***image_dst, int N_dst, int M_dst, int ***image_src, int N_src, int M_src, int x, int y) {
     if (x < 0 || x >= M_dst || y < 0 || y >= N_dst) {
@@ -358,12 +358,12 @@ int*** paste(int ***image_dst, int N_dst, int M_dst, int ***image_src, int N_src
  * This function applies a filter represented as a 2D matrix (`filter`) to a 3D image matrix (`image`).
  * The filtered result is stored back in the original `image` matrix after clamping values to a specified range.
  * 
- * @param image A pointer to the 3D image matrix.
+ * @param image The 3D image matrix.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
  * @param filter A 2D matrix representing the filter to be applied.
  * @param filter_size The size (both dimensions) of the filter.
- * @return int*** A pointer to the modified image matrix after applying the filter.
+ * @return int*** The modified image matrix after applying the filter.
  * If `image` or `filter` is NULL, or if an allocation fails, the function returns 
  * the original image.
  */
