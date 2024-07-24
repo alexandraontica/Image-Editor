@@ -11,6 +11,7 @@ This project is an image processing application written in C. It allows users to
 - [Commands](#commands)
 - [File Descriptions](#file-descriptions)
 - [Memory Management](#memory-management)
+- [Testing the Application](#testing-the-application)
 
 ## Getting Started
 
@@ -122,3 +123,15 @@ A makefile that provides build automation. It includes targets for building the 
 
 ## Memory Management
 The application dynamically allocates memory for images and filters. It is crucial to free this memory to avoid memory leaks. The **main.c** file includes proper memory management to ensure that all allocated memory is freed before exiting the program.
+
+## Testing the Application
+
+For testing purposes, the **images** directory contains 5 bmp files to use as input.
+
+| File | Height | Width |
+|------|--------|-------|
+| cat  |  532   |  400  |
+| cats |  789   |  1024 |
+| dog  |  432   |  400  |
+| f1   |  186   |  500  |
+| small|   38   |   38  |
