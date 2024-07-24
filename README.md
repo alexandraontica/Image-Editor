@@ -92,16 +92,63 @@ Contains functions for various image processing operations.
 
 Key Functions:
 
+For reference, this is the original image:
+
+<p style="text-align: center;">
+    <img src="images/cat.bmp" alt="original image images/cat.bmp" width="200">
+</p>
+
 - **alloc_mat**(int height, int width): *Allocates memory for an image matrix.*
 - **free_mat**(int ***mat, int height, int width): *Frees the allocated memory for an image matrix.*
 - **flip_horizontal**(int ***image, int height, int width): *Flips an image horizontally.*
+
+<p style="text-align: center;">
+    <img src="readme_images/cat_h_flipped.bmp" alt="horizontally flipped" width="200">
+</p>
+
 - **flip_vertical**(int ***image, int height, int width): *Flips an image vertically.*
+
+<p style="text-align: center;">
+    <img src="readme_images/cat_v_flipped.bmp" alt="vertically flipped" width="200">
+</p>
+
 - **rotate_left**(int ***image, int height, int width): *Rotates an image 90 degrees to the left.*
+
+<p style="text-align: center;">
+    <img src="readme_images/rotated_left.bmp" alt="rotated to the left" height="200">
+</p>
+
 - **rotate_right**(int ***image, int height, int width): *Rotates an image 90 degrees to the right.*
+
+<p style="text-align: center;">
+    <img src="readme_images/rotated_right.bmp" alt="rotated to the right" height="200">
+</p>
+
 - **crop**(int ***image, int height, int width, int x, int y, int new_height, int new_width): *Crops an image.*
+
+<p style="text-align: center;">
+    <img src="readme_images/cropped.bmp" alt="cropped" width="150">
+</p>
+
 - **extend**(int ***image, int height, int width, int extend_rows, int extend_cols, int rgb_R, int rgb_G, int rgb_B): *Extends an image with the specified color.*
+
+<p style="text-align: center;">
+    <img src="readme_images/extended2.bmp" alt="green extend" width="200">
+    <img src="readme_images/extended3.bmp" alt="blue extend" width="200">
+</p>
+
 - **paste**(int ***dst, int dst_height, int dst_width, int ***src, int src_height, int src_width, int x, int y): *Pastes one image onto another.*
+
+<p style="text-align: center;">
+    <img src="readme_images/paste.bmp" alt="added small.bmp onto the image of the cat" width="200">
+</p>
+
 - **apply_filter**(int ***image, int height, int width, float **filter, int filter_size): *Applies a filter to an image.*
+
+<p style="text-align: center;">
+    <img src="readme_images/filter1.bmp" alt="blur filter" width="200">
+    <img src="readme_images/filter2.bmp" alt="filter 2" width="200">
+</p>
 
 ### bmp.c
 Handles loading and saving of BMP images.
@@ -128,10 +175,10 @@ The application dynamically allocates memory for images and filters. It is cruci
 
 For testing purposes, the **images** directory contains 5 bmp files to use as input.
 
-| File | Height | Width |
-|------|--------|-------|
-| cat  |  532   |  400  |
-| cats |  789   |  1024 |
-| dog  |  432   |  400  |
-| f1   |  186   |  500  |
-| small|   38   |   38  |
+| File  | Height | Width |
+|-------|--------|-------|
+| cat   |  532   |  400  |
+| cats  |  789   |  1024 |
+| dog   |  432   |  400  |
+| f1    |  186   |  500  |
+| small |   38   |   38  |
