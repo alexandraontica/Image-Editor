@@ -10,7 +10,7 @@
 #define VAL_MAX_COLORS 255
 
 int ***alloc_mat(int M, int N);
-void free_mat(int ***mat, int M, int N);
+void free_mat(int ****mat, int M, int N);
 int ***flip_horizontal(int ***image, int N, int M);
 int ***flip_vertical(int ***image, int N, int M);
 int ***rotate_left(int ***image, int N, int M);

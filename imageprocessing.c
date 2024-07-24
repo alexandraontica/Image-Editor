@@ -54,23 +54,21 @@ int*** alloc_mat(int M, int N) {
  *
  * After freeing all allocated memory, the pointer `mat` is set to NULL.
  */
-void free_mat(int ***mat, int M, int N) {
+void free_mat(int ****mat, int M, int N) {
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < N; j++) {
-            free(mat[i][j]);
+            free((*mat)[i][j]);
         }
-        free(mat[i]);
+        free((*mat)[i]);
     }
 
-    free(mat);
-    mat = NULL;
+    free(*mat);
+    *mat = NULL;
 }
 
 /**
  * @brief Flips a 3D image matrix horizontally.
  * 
- * The image matrix is assumed to have dimensions N x M x NUM_COLORS.
- *
  * @param image A pointer to the 3D image matrix to be flipped.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
@@ -78,7 +76,7 @@ void free_mat(int ***mat, int M, int N) {
  *
  * The function returns the same pointer that was passed in, with the image modified in place.
  */
-int ***flip_horizontal(int ***image, int N, int M) {
+int*** flip_horizontal(int ***image, int N, int M) {
     if (image == NULL)
         return NULL;
 
@@ -99,8 +97,6 @@ int ***flip_horizontal(int ***image, int N, int M) {
 /**
  * @brief Flips a 3D image matrix vertically.
  *  
- * The image matrix is assumed to have dimensions N x M x NUM_COLORS.
- *
  * @param image A pointer to the 3D image matrix to be flipped.
  * @param N The number of rows in the image matrix.
  * @param M The number of columns in the image matrix.
@@ -108,7 +104,7 @@ int ***flip_horizontal(int ***image, int N, int M) {
  *
  * The function returns the same pointer that was passed in, with the image modified in place.
  */
-int ***flip_vertical(int ***image, int N, int M) {
+int*** flip_vertical(int ***image, int N, int M) {
     if (image == NULL)
         return NULL;
 
@@ -138,7 +134,7 @@ int ***flip_vertical(int ***image, int N, int M) {
  * @return int*** A pointer to the rotated 3D image matrix, or NULL if the input image is NULL 
  * or the original if the allocation for the rotated image fails.
  */
-int ***rotate_left(int ***image, int N, int M) {
+int*** rotate_left(int ***image, int N, int M) {
     if (image == NULL)
         return NULL;
 
@@ -157,7 +153,7 @@ int ***rotate_left(int ***image, int N, int M) {
         }
     }
 
-    free_mat(image, N, M);
+    free_mat(&image, N, M);
 
     return rotated_image;
 }
@@ -174,14 +170,14 @@ int ***rotate_left(int ***image, int N, int M) {
  * @return int*** A pointer to the rotated 3D image matrix, or NULL if the input image is NULL,
  * or the original image if the allocation for the rotated image fails.
  */
-int ***rotate_right(int ***image, int N, int M) {
+int*** rotate_right(int ***image, int N, int M) {
     if (image == NULL)
         return NULL;
 
     int ***rotated_image = alloc_mat(M, N);
 
     if (rotated_image == NULL) {
-        printf("Cannot rotate image.");
+        printf("Cannot rotate image.\n");
         return image;
     }
 
@@ -193,7 +189,7 @@ int ***rotate_right(int ***image, int N, int M) {
         }
     }
 
-    free_mat(image, N, M);
+    free_mat(&image, N, M);
 
     return rotated_image;
 }
@@ -213,16 +209,22 @@ int ***rotate_right(int ***image, int N, int M) {
  * @param h The height of the crop region.
  * @param w The width of the crop region.
  * @return int*** A pointer to the cropped 3D image matrix, or NULL if the input image is NULL,
- * or the original image if the allocation for the cropped image fails.
+ * or the original image if the allocation for the cropped image fails or if the coordinates 
+ * are invalid.
  */
-int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
+int*** crop(int ***image, int N, int M, int x, int y, int h, int w) {
     if (image == NULL)
         return NULL;
+
+    if (x < 0 || y < 0 || h < 0 || w < 0 || x + w > M || y + h > N) {
+        printf("Invalid crop coordinates or dimensions.\n");
+        return image;
+    }
 
     int ***cropped_image = alloc_mat(h, w);
 
     if (cropped_image == NULL) {
-        printf("Cannot crop image.");
+        printf("Cannot crop image.\n");
         return image;
     }
 
@@ -238,7 +240,7 @@ int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
         l = 0;
     }
 
-    free_mat(image, N, M);
+    free_mat(&image, N, M);
 
     return cropped_image;
 }
@@ -246,7 +248,6 @@ int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
 /**
  * @brief Extends a 3D image matrix by adding a border with specified color.
  *
- * The border is added equally on all sides.
  * A new 3D matrix is allocated for the extended image, and the original matrix is freed.
  *
  * @param image A pointer to the 3D image matrix to be extended.
@@ -260,14 +261,14 @@ int ***crop(int ***image, int N, int M, int x, int y, int h, int w) {
  * @return int*** A pointer to the extended 3D image matrix, or NULL if the input image is NULL,
  * or the original image if the allocation for the extended image fails.
  */
-int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new_G, int new_B) {
+int*** extend(int ***image, int N, int M, int rows, int cols, int new_R, int new_G, int new_B) {
     if (image == NULL)
         return NULL;
 
     int ***extended_image = alloc_mat(N + 2 * rows, M + 2 * cols);
 
     if (extended_image == NULL) {
-        printf("Cannot extend image.");
+        printf("Cannot extend image.\n");
         return image;
     }
 
@@ -294,7 +295,7 @@ int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
         }
     }
 
-    free_mat(image, N, M);
+    free_mat(&image, N, M);
 
     return extended_image;
 }
@@ -316,7 +317,7 @@ int ***extend(int ***image, int N, int M, int rows, int cols, int new_R, int new
  * @param y The y-coordinate in the destination matrix where the top-left corner of the source matrix will be pasted.
  * @return int*** A pointer to the destination image matrix after the source image has been pasted.
  */
-int ***paste(int ***image_dst, int N_dst, int M_dst, int ***image_src, int N_src, int M_src, int x, int y) {
+int*** paste(int ***image_dst, int N_dst, int M_dst, int ***image_src, int N_src, int M_src, int x, int y) {
     if (x < 0 || x >= M_dst || y < 0 || y >= N_dst) {
         printf("Invalid coordinates (%d, %d). They must be within the bounds of the destination matrix.\n", x, y);
         return image_dst;
@@ -366,7 +367,7 @@ int ***paste(int ***image_dst, int N_dst, int M_dst, int ***image_src, int N_src
  * If `image` or `filter` is NULL, or if an allocation fails, the function returns 
  * the original image.
  */
-int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size) {
+int*** apply_filter(int ***image, int N, int M, float **filter, int filter_size) {
     if (image == NULL)
         return NULL;
 
@@ -376,7 +377,7 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
     float ***img_with_filter = (float ***)malloc(N * sizeof(float **));
 
     if (img_with_filter == NULL) {
-        printf("Cannot apply filter.");
+        printf("Cannot apply filter.\n");
         return image;
     }
 
@@ -384,7 +385,7 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
         img_with_filter[i] = (float **)malloc(M * sizeof(float *));
 
         if (img_with_filter[i] == NULL) {
-            printf("Cannot apply filter.");
+            printf("Cannot apply filter.\n");
 
             for (int j = 0; j < i; j++) {
                 free(img_with_filter[j]);
@@ -397,7 +398,7 @@ int ***apply_filter(int ***image, int N, int M, float **filter, int filter_size)
         for (int j = 0; j < M; j++) {
             img_with_filter[i][j] = (float *)malloc(NUM_COLORS * sizeof(float));
             if (img_with_filter[i][j] == NULL) {
-                printf("Cannot apply filter.");
+                printf("Cannot apply filter.\n");
 
                 for (int k = 0; k < j; k++) {
                     free(img_with_filter[i][k]);

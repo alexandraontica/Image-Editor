@@ -32,7 +32,7 @@ int main() {
             // Free memory before exiting
             if (images_array!= NULL) {
                 for (int i = 0; i < num_images; i++) {
-                    free_mat(images_array[i].image, images_array[i].height, images_array[i].width);
+                    free_mat(&images_array[i].image, images_array[i].height, images_array[i].width);
                 }
                 free(images_array);
             }
@@ -66,22 +66,24 @@ int main() {
             TImage *aux = (TImage *)realloc(images_array, (num_images + 1) * sizeof(TImage));
 
             if (aux == NULL) {
-                printf("The image couldn't be loaded.");
+                printf("The image couldn't be loaded.\n");
             } else {
                 images_array = aux;
 
                 images_array[num_images].image = alloc_mat(img_height, img_width);
 
                 if (images_array[num_images].image == NULL) {
-                    printf("The image couldn't be loaded.");
+                    printf("The image couldn't be loaded.\n");
                 } else {
                     images_array[num_images].height = img_height;
                     images_array[num_images].width = img_width;
 
-                    read_from_bmp(images_array[num_images].image, img_height, img_width, path);
-                    printf("Image loaded.\n");
+                    int result = read_from_bmp(images_array[num_images].image, img_height,
+                                  img_width, path);
 
-                    num_images++;
+                    if (result) {
+                        num_images++;
+                    }
                 }
             }
         } else if (strcmp(command, "s") == 0) {
@@ -92,14 +94,22 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            printf("Path to save the image to: ");
-            char path[MAX_PATH];
-            scanf("%s", path);
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                printf("Path to save the image to: ");
+                char path[MAX_PATH];
+                scanf("%s", path);
 
-            write_to_bmp(images_array[index].image, images_array[index].height, images_array[index].width, path);
+                while (strcmp(path + strlen(path) - 4, ".bmp")) {
+                    printf("Save the file with the \".bmp\" extension.\n");
+                    printf("Path to save the image to: ");
+                    scanf("%s", path);
+                }
 
-            printf("Image saved.");
-
+                write_to_bmp(images_array[index].image, images_array[index].height,
+                             images_array[index].width, path);
+            }
         } else if (strcmp(command, "ah") == 0) {
             // Apply Horizontal Flip
             printf("Parameters:\n");
@@ -108,9 +118,13 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            images_array[index].image = flip_horizontal(images_array[index].image, images_array[index].height,
-                                                        images_array[index].width);
-
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                images_array[index].image = flip_horizontal(images_array[index].image,
+                                                            images_array[index].height,
+                                                            images_array[index].width);
+            }
         } else if (strcmp(command, "av") == 0) {
             // Apply Vertical Flip
             printf("Parameters:\n");
@@ -119,9 +133,12 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            images_array[index].image = flip_vertical(images_array[index].image, images_array[index].height,
-                                                      images_array[index].width);
-
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                images_array[index].image = flip_vertical(images_array[index].image, images_array[index].height,
+                                                          images_array[index].width);
+            }
         } else if (strcmp(command, "arl") == 0) {
             // Apply Rotate Left
             printf("Parameters:\n");
@@ -130,13 +147,16 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            images_array[index].image = rotate_left(images_array[index].image, images_array[index].height,
-                                                    images_array[index].width);
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                images_array[index].image = rotate_left(images_array[index].image, images_array[index].height,
+                                                        images_array[index].width);
 
-            int aux = images_array[index].height;
-            images_array[index].height = images_array[index].width;
-            images_array[index].width = aux;
-
+                int aux = images_array[index].height;
+                images_array[index].height = images_array[index].width;
+                images_array[index].width = aux;
+            }
         } else if (strcmp(command, "arr") == 0) {
             // Apply Rotate Right
             printf("Parameters:\n");
@@ -145,13 +165,16 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            images_array[index].image = rotate_right(images_array[index].image, images_array[index].height,
-                                                     images_array[index].width);
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                images_array[index].image = rotate_right(images_array[index].image, images_array[index].height,
+                                                         images_array[index].width);
 
-            int aux = images_array[index].height;
-            images_array[index].height = images_array[index].width;
-            images_array[index].width = aux;
-
+                int aux = images_array[index].height;
+                images_array[index].height = images_array[index].width;
+                images_array[index].width = aux;
+            }
         } else if (strcmp(command, "ac") == 0) {
             // Apply Crop
             printf("Parameters:\n");
@@ -160,24 +183,27 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            int x = 0, y = 0, new_width = 0, new_height = 0;
-            printf("X coordinate = ");
-            scanf("%d", &x);
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                int x = 0, y = 0, new_width = 0, new_height = 0;
+                printf("X coordinate = ");
+                scanf("%d", &x);
 
-            printf("Y coordinate = ");
-            scanf("%d", &y);
+                printf("Y coordinate = ");
+                scanf("%d", &y);
 
-            printf("New width = ");
-            scanf("%d", &new_width);
+                printf("New width = ");
+                scanf("%d", &new_width);
 
-            printf("New height = ");
-            scanf("%d", &new_height);
+                printf("New height = ");
+                scanf("%d", &new_height);
 
-            images_array[index].image = crop(images_array[index].image, images_array[index].height,
-                                             images_array[index].width, x, y, new_height, new_width);
-            images_array[index].height = new_height;
-            images_array[index].width = new_width;
-
+                images_array[index].image = crop(images_array[index].image, images_array[index].height,
+                                                 images_array[index].width, x, y, new_height, new_width);
+                images_array[index].height = new_height;
+                images_array[index].width = new_width;
+            }
         } else if (strcmp(command, "ae") == 0) {
             // Apply Extend
             printf("Parameters:\n");
@@ -186,28 +212,31 @@ int main() {
             int index = 0;
             scanf("%d", &index);
 
-            int rows = 0, cols = 0, R = 0, G = 0, B = 0;
-            printf("Rows to extend = ");
-            scanf("%d", &rows);
+            if (index < 0 || index >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                int rows = 0, cols = 0, R = 0, G = 0, B = 0;
+                printf("Rows to extend = ");
+                scanf("%d", &rows);
 
-            printf("Columns to extend = ");
-            scanf("%d", &cols);
+                printf("Columns to extend = ");
+                scanf("%d", &cols);
 
-            printf("Red value = ");
-            scanf("%d", &R);
+                printf("Red value = ");
+                scanf("%d", &R);
 
-            printf("Green value = ");
-            scanf("%d", &G);
+                printf("Green value = ");
+                scanf("%d", &G);
 
-            printf("Blue value = ");
-            scanf("%d", &B);
+                printf("Blue value = ");
+                scanf("%d", &B);
 
-            images_array[index].image = extend(images_array[index].image, images_array[index].height,
-                                               images_array[index].width, rows, cols, R, G, B);
+                images_array[index].image = extend(images_array[index].image, images_array[index].height,
+                                                   images_array[index].width, rows, cols, R, G, B);
 
-            images_array[index].height = images_array[index].height + 2 * rows;
-            images_array[index].width = images_array[index].width + 2 * cols;
-
+                images_array[index].height = images_array[index].height + 2 * rows;
+                images_array[index].width = images_array[index].width + 2 * cols;
+            }
         } else if (strcmp(command, "ap") == 0) {
             // Apply Paste
             int index_dst = 0, index_src = 0, x = 0, y = 0;
@@ -215,20 +244,27 @@ int main() {
             printf("Destination image index = ");
             scanf("%d", &index_dst);
 
-            printf("Source image index = ");
-            scanf("%d", &index_src);
+            if (index_dst < 0 || index_dst >= num_images) {
+                printf("Invalid index.\n");
+            } else {
+                printf("Source image index = ");
+                scanf("%d", &index_src);
 
-            printf("X coordinate = ");
-            scanf("%d", &x);
+                if (index_src < 0 || index_src >= num_images) {
+                    printf("Invalid index.\n");
+                } else {
+                    printf("X coordinate = ");
+                    scanf("%d", &x);
 
-            printf("Y coordinate = ");
-            scanf("%d", &y);
+                    printf("Y coordinate = ");
+                    scanf("%d", &y);
 
-            images_array[index_dst].image = paste(images_array[index_dst].image, images_array[index_dst].height,
-                                                  images_array[index_dst].width, images_array[index_src].image,
-                                                  images_array[index_src].height, images_array[index_src].width,
-                                                  x, y);
-
+                    images_array[index_dst].image = paste(images_array[index_dst].image, images_array[index_dst].height,
+                                                          images_array[index_dst].width, images_array[index_src].image,
+                                                          images_array[index_src].height, images_array[index_src].width,
+                                                          x, y);
+                }
+            }
         } else if (strcmp(command, "cf") == 0) {
             // Create Filter
             printf("Parameters:\n");
@@ -236,7 +272,7 @@ int main() {
             TFilter *aux = (TFilter *)realloc(filters_array, (num_filters + 1) * sizeof(TFilter));
 
             if (aux == NULL) {
-                printf("The filter cannot be added.");
+                printf("The filter cannot be added.\n");
             } else {
                 filters_array = aux;
 
@@ -247,14 +283,14 @@ int main() {
                                                                      sizeof(float *));
 
                 if (filters_array[num_filters].filter == NULL) {
-                    printf("The filter cannot be added.");
+                    printf("The filter cannot be added.\n");
                 } else {
                     for (int i = 0; i < filters_array[num_filters].size; i++) {
                         filters_array[num_filters].filter[i] = (float *)calloc(filters_array[num_filters].size,
                                                                                sizeof(float));
 
                         if (filters_array[num_filters].filter[i] == NULL) {
-                            printf("The filter cannot be added.");
+                            printf("The filter cannot be added.\n");
 
                             for (int j = 0; j < i; j++) {
                                 free(filters_array[num_filters].filter[j]);
@@ -286,55 +322,78 @@ int main() {
             printf("Image index = ");
             scanf("%d", &index_img);
 
-            printf("Filter index = ");
-            scanf("%d", &index_filter);
+            if (index_img < 0 || index_img >= num_images) {
+                printf("Invalid index.");
+            } else {
+                printf("Filter index = ");
+                scanf("%d", &index_filter);
 
-            images_array[index_img].image = apply_filter(images_array[index_img].image,
-                                                         images_array[index_img].height,
-                                                         images_array[index_img].width,
-                                                         filters_array[index_filter].filter,
-                                                         filters_array[index_filter].size);
-
+                if (index_filter < 0 || index_filter >= num_filters) {
+                    printf("Invalid index.\n");
+                } else {
+                    images_array[index_img].image = apply_filter(images_array[index_img].image,
+                                                                 images_array[index_img].height,
+                                                                 images_array[index_img].width,
+                                                                 filters_array[index_filter].filter,
+                                                                 filters_array[index_filter].size);
+                }
+            }
         } else if (strcmp(command, "df") == 0) {
             // Delete Filter
-            printf("Parameters:\n");
+            if (num_filters == 0) {
+                printf("No filter to delete.\n");
+            } else {
+                printf("Parameters:\n");
 
-            printf("Filter index = ");
-            int index_filter = 0;
-            scanf("%d", &index_filter);
+                printf("Filter index = ");
+                int index_filter = 0;
+                scanf("%d", &index_filter);
 
-            for (int k = 0; k < filters_array[index_filter].size; k++)
-                free(filters_array[index_filter].filter[k]);
-            free(filters_array[index_filter].filter);
+                if (index_filter < 0 || index_filter >= num_filters) {
+                    printf("Invalid index.\n");
+                } else {
+                    for (int k = 0; k < filters_array[index_filter].size; k++)
+                        free(filters_array[index_filter].filter[k]);
+                    free(filters_array[index_filter].filter);
 
-            for (int i = index_filter; i < num_filters - 1; i++) {
-                filters_array[i].size = filters_array[i + 1].size;
-                filters_array[i].filter = filters_array[i + 1].filter;
+                    for (int i = index_filter; i < num_filters - 1; i++) {
+                        filters_array[i].size = filters_array[i + 1].size;
+                        filters_array[i].filter = filters_array[i + 1].filter;
+                    }
+
+                    num_filters--;
+                    printf("Filter deleted.\n");
+                }
             }
-
-            num_filters--;
-
         } else if (strcmp(command, "di") == 0) {
             // Delete Image
-            printf("Parameters:\n");
+            if (num_images == 0) {
+                printf("No image to delete.");
+            } else {
+                printf("Parameters:\n");
 
-            printf("Image index = ");
-            int index_img = 0;
-            scanf("%d", &index_img);
+                printf("Image index = ");
+                int index_img = 0;
+                scanf("%d", &index_img);
 
-            free_mat(images_array[index_img].image, images_array[index_img].height,
-                     images_array[index_img].width);
+                if (index_img < 0 || index_img >= num_images) {
+                    printf("Invalid index.");
+                } else {
+                    free_mat(&images_array[index_img].image, images_array[index_img].height,
+                             images_array[index_img].width);
 
-            for (int i = index_img; i < num_images - 1; i++) {
-                images_array[i] = images_array[i + 1];
+                    for (int i = index_img; i < num_images - 1; i++) {
+                        images_array[i] = images_array[i + 1];
+                    }
+
+                    num_images--;
+                    printf("Image deleted.\n");
+                }
             }
-
-            num_images--;
+        } else {
+            printf("Invalid command.\n");
         }
     }
 
     return 0;
 }
-
-// TODO(alex) 0: conversie jpeg/png to bmp?
-// TODO(alex) 5: README.md ca lumea

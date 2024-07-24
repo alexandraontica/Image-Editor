@@ -12,22 +12,22 @@
  * @param M The number of columns (width) in the pixel matrix.
  * @param path The path to the BMP file from which pixel data will be read.
  */
-void read_from_bmp(int ***pixel_matrix, int N, int M, const char *path) {
+int read_from_bmp(int ***pixel_matrix, int N, int M, const char *path) {
     FILE *file = fopen(path, "rb");
     if (!file) {
         printf("Error opening file.");
-        return;
+        return 0;
     }
 
     unsigned char header[HEADER_SIZE];
     fread(header, sizeof(unsigned char), HEADER_SIZE, file);
 
-    int padding = (4 - (M * 3) % 4) % 4;
+    int padding = (4 - (M * NUM_COLORS) % 4) % 4;
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
-            unsigned char color[3];
-            fread(color, sizeof(unsigned char), 3, file);
+            unsigned char color[NUM_COLORS];
+            fread(color, sizeof(unsigned char), NUM_COLORS, file);
             pixel_matrix[N - i - 1][j][0] = (int)color[2];  // Red
             pixel_matrix[N - i - 1][j][1] = (int)color[1];  // Green
             pixel_matrix[N - i - 1][j][2] = (int)color[0];  // Blue
@@ -36,6 +36,7 @@ void read_from_bmp(int ***pixel_matrix, int N, int M, const char *path) {
     }
 
     fclose(file);
+    return 1;
 }
 
 /**
@@ -50,11 +51,11 @@ void read_from_bmp(int ***pixel_matrix, int N, int M, const char *path) {
  * @param M The number of columns (width) in the pixel matrix.
  * @param path The path to the BMP file where pixel data will be written.
  */
-void write_to_bmp(int ***pixel_matrix, int N, int M, const char *path) {
+int write_to_bmp(int ***pixel_matrix, int N, int M, const char *path) {
     FILE *file = fopen(path, "wb");
     if (!file) {
         perror("Error opening file");
-        return;
+        return 0;
     }
 
     unsigned char header[HEADER_SIZE] = {
@@ -75,25 +76,26 @@ void write_to_bmp(int ***pixel_matrix, int N, int M, const char *path) {
         0, 0, 0, 0    // Important colors
     };
 
-    int padding = (4 - (M * 3) % 4) % 4;
-    int fileSize = HEADER_SIZE + (3 * M + padding) * N;
+    int padding = (4 - (M * NUM_COLORS) % 4) % 4;
+    int fileSize = HEADER_SIZE + (NUM_COLORS * M + padding) * N;
     *(int *)&header[2] = fileSize;
     *(int *)&header[18] = M;
     *(int *)&header[22] = N;
 
     fwrite(header, sizeof(unsigned char), HEADER_SIZE, file);
 
-    unsigned char pad[3] = {0, 0, 0};
+    unsigned char pad[NUM_COLORS] = {0, 0, 0};
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
-            unsigned char color[3];
+            unsigned char color[NUM_COLORS];
             color[2] = (unsigned char)(pixel_matrix[N - i - 1][j][0]);  // Red
             color[1] = (unsigned char)(pixel_matrix[N - i - 1][j][1]);  // Green
             color[0] = (unsigned char)(pixel_matrix[N - i - 1][j][2]);  // Blue
-            fwrite(color, sizeof(unsigned char), 3, file);
+            fwrite(color, sizeof(unsigned char), NUM_COLORS, file);
         }
         fwrite(pad, sizeof(unsigned char), padding, file);
     }
 
     fclose(file);
+    return 1;
 }
